@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Estación de reciclaje | Re-Points{% endblock %}
+{% block content %}
+<section class="station-layout">
+    <div class="station-copy">
+        <p class="eyebrow">ESTACIÓN DE RECICLAJE</p>
+        <h1>Validar código QR</h1>
+        <p>Simula la lectura del escáner introduciendo el identificador obtenido del QR del cliente.</p>
+    </div>
+    <article class="station-card">
+        <form id="station-form" class="auth-form" action="/estacion" method="get">
+            <label for="public_identifier">Identificador leído</label>
+            <input id="public_identifier" name="public_identifier" type="text" maxlength="100" required autocomplete="off" placeholder="Pega aquí el contenido del QR">
+            <button class="button form-button" type="submit">Validar cliente</button>
+            <p id="station-message" class="form-message" role="status" aria-live="polite"></p>
+        </form>
+        <div id="validated-client" class="validated-client" hidden>
+            <span>CLIENTE AUTORIZADO</span>
+            <strong id="validated-client-name"></strong>
+            <p>La estación puede continuar con el análisis del residuo.</p>
+        </div>
+        {% if validated_client %}
+        <p class="form-message success">{{ validation_message }}</p>
+        <div class="validated-client">
+            <span>CLIENTE AUTORIZADO</span>
+            <strong>{{ validated_client.full_name }}</strong>
+            <p>La estación puede continuar con el análisis del residuo.</p>
+        </div>
+        {% endif %}
+    </article>
+</section>
+{% endblock %}

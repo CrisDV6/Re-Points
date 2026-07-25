@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Crear cuenta | Re-Points{% endblock %}
+{% block content %}
+<section class="auth-layout">
+    <div class="auth-intro">
+        <p class="eyebrow">NUEVA CUENTA</p>
+        <h1>Empieza a sumar con cada botella.</h1>
+        <p>Tu cuenta te permitirá identificarte en las estaciones, consultar tu historial y revisar los beneficios disponibles.</p>
+        <ul class="auth-benefits">
+            <li><span>01</span> Identificador público único</li>
+            <li><span>02</span> Puntos separados por establecimiento</li>
+            <li><span>03</span> Historial de reciclajes y movimientos</li>
+        </ul>
+    </div>
+    <div class="auth-card">
+        <h2>Crear cuenta</h2>
+        <p class="form-subtitle">Completa tus datos para registrarte como cliente.</p>
+        <form id="register-form" class="auth-form" novalidate>
+            <label for="full-name">Nombre completo</label>
+            <input id="full-name" name="full_name" type="text" minlength="3" maxlength="120" autocomplete="name" required placeholder="Ej. Andrea López">
+
+            <label for="email">Correo electrónico</label>
+            <input id="email" name="email" type="email" autocomplete="email" required placeholder="nombre@correo.com">
+
+            <label for="password">Contraseña</label>
+            <input id="password" name="password" type="password" minlength="8" maxlength="128" autocomplete="new-password" required placeholder="Mínimo 8 caracteres">
+
+            <p id="form-message" class="form-message" role="alert" aria-live="polite"></p>
+            <button class="button form-button" type="submit">Crear mi cuenta</button>
+        </form>
+        <p class="auth-switch">¿Ya tienes una cuenta? <a href="/iniciar-sesion">Inicia sesión</a></p>
+    </div>
+</section>
+{% endblock %}
+

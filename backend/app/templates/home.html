@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}Re-Points | Recicla y acumula puntos{% endblock %}
+{% block content %}
+<section class="hero">
+    <div class="hero-content">
+        <p class="eyebrow">RECICLA · ACUMULA · CANJEA</p>
+        <h1>Tus botellas pueden convertirse en algo mejor.</h1>
+        <p class="hero-description">Identifícate con tu código QR, recicla plástico o vidrio y recibe puntos en los establecimientos participantes.</p>
+        <div class="hero-actions">
+            <a class="button" href="/registro">Comenzar a reciclar</a>
+            <a class="button button-secondary" href="#como-funciona">Conocer el proceso</a>
+        </div>
+        <div class="hero-note">
+            <span class="status-dot"></span>
+            Primera versión preparada para operar con simulaciones
+        </div>
+    </div>
+    <div class="cycle-card" aria-label="Ciclo de Re-Points">
+        <div class="cycle-center">R<span>+</span></div>
+        <div class="cycle-item cycle-one"><b>01</b><span>Identifícate</span></div>
+        <div class="cycle-item cycle-two"><b>02</b><span>Recicla</span></div>
+        <div class="cycle-item cycle-three"><b>03</b><span>Gana puntos</span></div>
+    </div>
+</section>
+
+<section id="como-funciona" class="section section-light">
+    <div class="section-heading">
+        <p class="eyebrow">UN PROCESO SENCILLO</p>
+        <h2>Reciclar en tres pasos</h2>
+        <p>El sistema conecta tu cuenta, la estación de reciclaje y los beneficios de cada establecimiento.</p>
+    </div>
+    <div class="steps-grid">
+        <article class="step-card">
+            <span class="step-number">01</span>
+            <h3>Muestra tu QR</h3>
+            <p>Al registrarte recibes un identificador único para usar en la estación.</p>
+        </article>
+        <article class="step-card featured">
+            <span class="step-number">02</span>
+            <h3>Deposita la botella</h3>
+            <p>La estación evaluará si el residuo corresponde a plástico o vidrio.</p>
+        </article>
+        <article class="step-card">
+            <span class="step-number">03</span>
+            <h3>Consulta tus puntos</h3>
+            <p>Los puntos aprobados se guardarán en el establecimiento donde reciclaste.</p>
+        </article>
+    </div>
+</section>
+
+<section id="beneficios" class="section impact-section">
+    <div class="impact-copy">
+        <p class="eyebrow">BENEFICIOS COMPARTIDOS</p>
+        <h2>Una cuenta para reconocer cada aporte.</h2>
+        <p>Re-Points conserva el historial de reciclaje y permite que cada establecimiento gestione sus propios puntos y premios.</p>
+    </div>
+    <div class="benefit-list">
+        <div><span>✓</span><p><strong>Seguimiento claro</strong><br>Historial y puntos organizados por establecimiento.</p></div>
+        <div><span>✓</span><p><strong>Clasificación responsable</strong><br>Reglas para aceptar únicamente residuos con confianza suficiente.</p></div>
+        <div><span>✓</span><p><strong>Premios locales</strong><br>Beneficios definidos por los establecimientos participantes.</p></div>
+    </div>
+</section>
+
+<section class="closing-cta">
+    <p class="eyebrow">TU PRIMER PASO CUENTA</p>
+    <h2>Crea tu cuenta y prepárate para reciclar.</h2>
+    <a class="button button-light" href="/registro">Registrarme en Re-Points</a>
+</section>
+{% endblock %}
+

@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Mi código QR | Re-Points{% endblock %}
+{% block content %}
+<section class="qr-layout">
+    <div class="qr-copy">
+        <p class="eyebrow">IDENTIFICACIÓN PERSONAL</p>
+        <h1>Tu código para reciclar</h1>
+        <p>Muéstralo en la estación Re-Points antes de depositar tus botellas. El código identifica tu cuenta sin exponer tu nombre ni tu correo.</p>
+        <a class="button button-secondary" href="/">Volver al inicio</a>
+    </div>
+    <article class="qr-card">
+        <p class="qr-label">QR de {{ user.full_name }}</p>
+        <img class="qr-image" src="{{ qr_data_url }}" alt="Código QR personal de Re-Points" width="330" height="330">
+        <p class="qr-help">Mantén la pantalla visible y evita cubrir los bordes del código.</p>
+    </article>
+</section>
+{% endblock %}
