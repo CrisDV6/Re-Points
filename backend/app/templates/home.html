@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Re-Points | Recicla y acumula puntos{% endblock %}
 {% block content %}
+{% if not user %}
 <section class="hero">
     <div class="hero-content">
         <p class="eyebrow">RECICLA · ACUMULA · CANJEA</p>
@@ -22,7 +23,31 @@
         <div class="cycle-item cycle-three"><b>03</b><span>Gana puntos</span></div>
     </div>
 </section>
+{% elif user.role.value == 'client' %}
+<section class="member-home">
+    <div class="member-welcome">
+        <p class="eyebrow">RESUMEN DE TU CUENTA</p>
+        <h1>Hola, {{ user.full_name }}.</h1>
+        <p>Tu cuenta está lista para identificarte, reciclar y consultar los puntos acumulados en cada local.</p>
+        <div class="hero-actions"><a class="button button-light" href="/mi-qr">Mostrar mi QR</a><a class="button member-outline" href="/mi-historial">Ver mis puntos</a></div>
+    </div>
+    <div class="member-summary">
+        <article><span>Total informativo</span><strong>{{ general_balance }}</strong><small>puntos entre todos los locales</small></article>
+        <article><span>Locales con saldo</span><strong>{{ local_count }}</strong><small>consulta cada saldo por separado</small></article>
+    </div>
+</section>
+{% else %}
+<section class="member-home admin-home">
+    <div class="member-welcome">
+        <p class="eyebrow">CENTRO DE OPERACIÓN</p>
+        <h1>Bienvenido, {{ user.full_name }}.</h1>
+        <p>Desde aquí puedes validar clientes, registrar botellas y consultar la actividad del establecimiento.</p>
+        <div class="hero-actions"><a class="button button-light" href="/estacion">Abrir estación</a><a class="button member-outline" href="/panel-dueno">Ver panel</a></div>
+    </div>
+</section>
+{% endif %}
 
+{% if not user %}
 <section id="como-funciona" class="section section-light">
     <div class="section-heading">
         <p class="eyebrow">UN PROCESO SENCILLO</p>
@@ -60,11 +85,11 @@
         <div><span>✓</span><p><strong>Premios locales</strong><br>Beneficios definidos por los establecimientos participantes.</p></div>
     </div>
 </section>
+{% endif %}
 
-<section class="closing-cta">
+{% if not user %}<section class="closing-cta">
     <p class="eyebrow">TU PRIMER PASO CUENTA</p>
     <h2>Crea tu cuenta y prepárate para reciclar.</h2>
     <a class="button button-light" href="/registro">Registrarme en Re-Points</a>
-</section>
+</section>{% elif user.role.value == 'client' %}<section class="closing-cta"><p class="eyebrow">TU APORTE CUENTA</p><h2>Presenta tu QR en un local participante para registrar tu próximo reciclaje.</h2><a class="button button-light" href="/mi-qr">Abrir mi código QR</a></section>{% else %}<section class="closing-cta"><p class="eyebrow">GESTIÓN RE-POINTS</p><h2>La estación está lista para validar clientes y acreditar sus reciclajes.</h2><a class="button button-light" href="/estacion">Ir a la estación</a></section>{% endif %}
 {% endblock %}
-

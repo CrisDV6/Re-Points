@@ -10,6 +10,10 @@ def test_public_pages_are_available(client) -> None:
         assert response.status_code == 200
         assert expected_text in response.text
 
+    home = client.get("/")
+    assert "Reciclar en tres pasos" in home.text
+    assert "BENEFICIOS COMPARTIDOS" in home.text
+
 
 def test_static_styles_are_available(client) -> None:
     response = client.get("/static/css/styles.css")

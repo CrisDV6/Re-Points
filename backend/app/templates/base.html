@@ -16,15 +16,19 @@
         </a>
         <button class="menu-button" type="button" aria-expanded="false" aria-controls="main-navigation">Menú</button>
         <nav id="main-navigation" class="main-navigation" aria-label="Navegación principal">
-            <a href="/#como-funciona">Cómo funciona</a>
-            <a href="/#beneficios">Beneficios</a>
+            <span id="public-info-links" class="nav-actions">
+                <a href="/#como-funciona">Cómo funciona</a>
+                <a href="/#beneficios">Beneficios</a>
+            </span>
             <span id="guest-actions" class="nav-actions">
                 <a href="/iniciar-sesion">Iniciar sesión</a>
                 <a class="button button-small" href="/registro">Crear cuenta</a>
             </span>
             <span id="user-actions" class="nav-actions" hidden>
                 <a id="station-link" href="/estacion" hidden>Estación</a>
+                <a id="owner-link" href="/panel-dueno" hidden>Panel</a>
                 <a id="qr-link" href="/mi-qr" hidden>Mi QR</a>
+                <a id="history-link" href="/mi-historial" hidden>Mis puntos</a>
                 <span id="nav-user-name" class="user-name"></span>
                 <button id="logout-button" class="text-button" type="button">Cerrar sesión</button>
             </span>

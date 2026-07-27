@@ -74,11 +74,15 @@ class Establishment(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(120), unique=True)
+    code: Mapped[str | None] = mapped_column(String(50), unique=True, index=True, nullable=True)
+    description: Mapped[str | None] = mapped_column(Text, nullable=True)
     address: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    logo_url: Mapped[str | None] = mapped_column(String(500), nullable=True)
     plastic_points: Mapped[int] = mapped_column(Integer, default=5)
     glass_points: Mapped[int] = mapped_column(Integer, default=8)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=current_time)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=current_time, onupdate=current_time)
 
     administrators: Mapped[list["EstablishmentAdmin"]] = relationship(back_populates="establishment")
     balances: Mapped[list["CustomerBalance"]] = relationship(back_populates="establishment")
@@ -86,6 +90,8 @@ class Establishment(Base):
     point_movements: Mapped[list["PointMovement"]] = relationship(back_populates="establishment")
     rewards: Mapped[list["Reward"]] = relationship(back_populates="establishment")
     settings: Mapped[list["Setting"]] = relationship(back_populates="establishment")
+    devices: Mapped[list["Device"]] = relationship(back_populates="establishment")
+    reward_rules: Mapped[list["LocalRewardRule"]] = relationship(back_populates="establishment")
 
 
 class EstablishmentAdmin(Base):
@@ -126,6 +132,9 @@ class CustomerBalance(Base):
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     establishment_id: Mapped[int] = mapped_column(ForeignKey("establishments.id"))
     points: Mapped[int] = mapped_column(Integer, default=0)
+    total_points_earned: Mapped[int] = mapped_column(Integer, default=0)
+    total_points_redeemed: Mapped[int] = mapped_column(Integer, default=0)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=current_time)
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=current_time)
 
     user: Mapped[User] = relationship(back_populates="balances")
@@ -139,15 +148,54 @@ class RecyclingEvent(Base):
     transaction_identifier: Mapped[str] = mapped_column(String(36), unique=True, index=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     establishment_id: Mapped[int] = mapped_column(ForeignKey("establishments.id"))
+    device_id: Mapped[int | None] = mapped_column(ForeignKey("devices.id"), nullable=True)
     waste_type: Mapped[WasteType] = mapped_column(Enum(WasteType))
+    bottle_count: Mapped[int] = mapped_column(Integer, default=1)
     confidence: Mapped[Decimal] = mapped_column(Numeric(5, 4))
     points_awarded: Mapped[int] = mapped_column(Integer, default=0)
     accepted: Mapped[bool] = mapped_column(Boolean, default=False)
+    status: Mapped[str] = mapped_column(String(30), default="accepted")
+    image_path: Mapped[str | None] = mapped_column(String(500), nullable=True)
+    captured_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=current_time)
 
     user: Mapped[User] = relationship(back_populates="recycling_events")
     establishment: Mapped[Establishment] = relationship(back_populates="recycling_events")
     point_movement: Mapped["PointMovement | None"] = relationship(back_populates="recycling_event")
+    device: Mapped["Device | None"] = relationship(back_populates="recycling_events")
+
+
+class Device(Base):
+    __tablename__ = "devices"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    device_code: Mapped[str] = mapped_column(String(80), unique=True, index=True)
+    establishment_id: Mapped[int] = mapped_column(ForeignKey("establishments.id"))
+    name: Mapped[str] = mapped_column(String(120))
+    api_key_hash: Mapped[str] = mapped_column(String(255))
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+    last_connection: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=current_time)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=current_time, onupdate=current_time)
+
+    establishment: Mapped[Establishment] = relationship(back_populates="devices")
+    recycling_events: Mapped[list[RecyclingEvent]] = relationship(back_populates="device")
+
+
+class LocalRewardRule(Base):
+    __tablename__ = "local_reward_rules"
+    __table_args__ = (UniqueConstraint("establishment_id", "material"),)
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    establishment_id: Mapped[int] = mapped_column(ForeignKey("establishments.id"))
+    material: Mapped[WasteType] = mapped_column(Enum(WasteType))
+    points: Mapped[int] = mapped_column(Integer)
+    minimum_confidence: Mapped[Decimal] = mapped_column(Numeric(5, 4), default=Decimal("0.80"))
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=current_time)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=current_time, onupdate=current_time)
+
+    establishment: Mapped[Establishment] = relationship(back_populates="reward_rules")
 
 
 class PointMovement(Base):

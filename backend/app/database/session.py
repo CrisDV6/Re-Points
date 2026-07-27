@@ -22,6 +22,12 @@ def init_database() -> None:
     from backend.app import models  # noqa: F401
 
     Base.metadata.create_all(bind=engine)
+    from backend.app.database.migrations import run_compatible_migrations
+    from backend.app.database.seed import seed_phase_one
+
+    run_compatible_migrations(engine)
+    with SessionLocal() as database:
+        seed_phase_one(database)
 
 
 def get_database_session() -> Generator[Session, None, None]:
@@ -31,4 +37,3 @@ def get_database_session() -> Generator[Session, None, None]:
         yield session
     finally:
         session.close()
-
