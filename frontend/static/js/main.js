@@ -13,6 +13,7 @@ async function updateSessionNavigation() {
 
     const user = await response.json();
     document.querySelector('#guest-actions')?.setAttribute('hidden', '');
+    document.querySelector('#public-info-links')?.setAttribute('hidden', '');
     const userActions = document.querySelector('#user-actions');
     const userName = document.querySelector('#nav-user-name');
     if (userActions) userActions.hidden = false;
@@ -21,8 +22,12 @@ async function updateSessionNavigation() {
     if (stationLink && ['establishment_admin', 'superadmin'].includes(user.role)) {
         stationLink.hidden = false;
     }
+    const ownerLink = document.querySelector('#owner-link');
+    if (ownerLink && ['establishment_admin', 'superadmin'].includes(user.role)) ownerLink.hidden = false;
     const qrLink = document.querySelector('#qr-link');
     if (qrLink && user.role === 'client') qrLink.hidden = false;
+    const historyLink = document.querySelector('#history-link');
+    if (historyLink && user.role === 'client') historyLink.hidden = false;
 }
 
 document.querySelector('#logout-button')?.addEventListener('click', async () => {
@@ -108,10 +113,42 @@ document.querySelector('#station-form')?.addEventListener('submit', async (event
         message.classList.add('success');
         resultName.textContent = result.client.full_name;
         resultCard.hidden = false;
+        const depositForm = document.querySelector('#deposit-form');
+        if (depositForm) {
+            depositForm.public_identifier.value = result.client.public_identifier;
+            depositForm.hidden = false;
+        }
     } catch (error) {
         message.textContent = error.message;
         message.classList.add('error');
     } finally {
         button.disabled = false;
     }
+});
+
+const depositForm = document.querySelector('#deposit-form');
+if (depositForm && window.validatedClientIdentifier) {
+    depositForm.public_identifier.value = window.validatedClientIdentifier;
+    depositForm.hidden = false;
+}
+depositForm?.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const message = form.querySelector('#deposit-message');
+    const button = form.querySelector('button[type="submit"]');
+    button.disabled = true;
+    message.className = 'form-message';
+    try {
+        const response = await fetch('/station/deposits', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ public_identifier: form.public_identifier.value, plastic_bottles: Number(form.plastic_bottles.value), glass_bottles: Number(form.glass_bottles.value) }),
+        });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.detail || 'No fue posible registrar las botellas');
+        message.textContent = `${result.points_awarded} puntos acreditados. Nuevo saldo: ${result.new_balance}.`;
+        message.classList.add('success');
+        form.plastic_bottles.value = 0; form.glass_bottles.value = 0;
+    } catch (error) {
+        message.textContent = error.message; message.classList.add('error');
+    } finally { button.disabled = false; }
 });

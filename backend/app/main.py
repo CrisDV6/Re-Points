@@ -8,7 +8,11 @@ from starlette.middleware.sessions import SessionMiddleware
 from backend.app.config import SECRET_KEY, SESSION_COOKIE, SESSION_MAX_AGE
 from backend.app.database.session import init_database
 from backend.app.routes.auth import router as auth_router
+from backend.app.routes.client import router as client_router
+from backend.app.routes.locals import router as locals_router
 from backend.app.routes.pages import router as pages_router
+from backend.app.routes.points import router as points_router
+from backend.app.routes.recycling import router as recycling_router
 from backend.app.routes.station import router as station_router
 
 
@@ -28,6 +32,10 @@ app.add_middleware(
     https_only=False,
 )
 app.include_router(auth_router)
+app.include_router(client_router)
+app.include_router(locals_router)
+app.include_router(points_router)
+app.include_router(recycling_router)
 app.include_router(pages_router)
 app.include_router(station_router)
 app.mount(

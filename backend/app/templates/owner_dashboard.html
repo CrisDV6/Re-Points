@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Panel del dueño | Re-Points{% endblock %}
+{% block content %}
+<section class="dashboard-layout">
+  <div class="dashboard-heading"><p class="eyebrow">PANEL DEL DUEÑO</p><h1>{{ establishment.name }}</h1><p>Resumen de las botellas recibidas y los puntos entregados.</p></div>
+  <div class="metric-grid">
+    <article class="metric-card featured"><span>Botellas recibidas</span><strong>{{ totals[0] }}</strong></article>
+    <article class="metric-card"><span>Puntos entregados</span><strong>{{ totals[1] }}</strong></article>
+    <article class="metric-card"><span>Clientes atendidos</span><strong>{{ totals[2] }}</strong></article>
+  </div>
+  <article class="data-card"><h2>Actividad reciente</h2>
+    {% if events %}<div class="table-wrap"><table><thead><tr><th>Fecha</th><th>Cliente</th><th>Material</th><th>Botellas</th><th>Puntos</th></tr></thead><tbody>
+    {% for event in events %}<tr><td>{{ event.created_at.strftime('%d/%m/%Y %H:%M') }}</td><td>{{ event.user.full_name }}</td><td>{{ event.waste_type.value|capitalize }}</td><td>{{ event.bottle_count }}</td><td>{{ event.points_awarded }}</td></tr>{% endfor %}
+    </tbody></table></div>{% else %}<p class="empty-state">Todavía no se han registrado botellas.</p>{% endif %}
+  </article>
+</section>
+{% endblock %}

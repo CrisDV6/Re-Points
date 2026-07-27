@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Mi historial | Re-Points{% endblock %}
+{% block content %}
+<section class="dashboard-layout">
+  <div class="dashboard-heading"><p class="eyebrow">MI CUENTA</p><h1>Hola, {{ user.full_name }}</h1><p>Consulta los puntos obtenidos con cada entrega.</p></div>
+  <div class="total-points-note"><span>Total acumulado entre todos los locales</span><strong>{{ balance }} puntos</strong><small>Este total es informativo. Los puntos de distintos locales no se pueden combinar.</small></div>
+  <div class="local-points-grid">
+    {% for card in local_cards %}
+    <article class="local-points-card">
+      <span class="local-code">{{ card.balance.establishment.code }}</span>
+      <h2>{{ card.balance.establishment.name }}</h2>
+      <strong>{{ card.balance.points }} puntos</strong>
+      <p>{{ card.bottles }} botellas recicladas</p>
+      <small>{{ card.balance.establishment.address }}</small>
+      <div class="card-actions"><a class="button button-small" href="/locales/{{ card.balance.establishment_id }}">Ver local</a><a href="/mi-historial?localId={{ card.balance.establishment_id }}">Ver historial</a></div>
+    </article>
+    {% endfor %}
+  </div>
+  <article class="data-card"><div class="data-card-heading"><h2>{% if selected_local %}Historial en {{ selected_local.name }}{% else %}Historial de puntos{% endif %}</h2>{% if selected_local %}<a href="/mi-historial">Quitar filtro</a>{% endif %}</div>
+    {% if movements %}<div class="table-wrap"><table><thead><tr><th>Fecha</th><th>Establecimiento</th><th>Detalle</th><th>Puntos</th></tr></thead><tbody>
+    {% for movement in movements %}<tr><td>{{ movement.created_at.strftime('%d/%m/%Y %H:%M') }}</td><td>{{ movement.establishment.name }}</td><td>{{ movement.description }}</td><td class="points-positive">+{{ movement.points }}</td></tr>{% endfor %}
+    </tbody></table></div>{% else %}<p class="empty-state">Aún no tienes movimientos. Presenta tu QR al entregar botellas.</p>{% endif %}
+  </article>
+</section>
+{% endblock %}

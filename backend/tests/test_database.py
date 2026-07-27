@@ -12,9 +12,11 @@ def test_database_creates_expected_tables() -> None:
 
     assert table_names == {
         "customer_balances",
+        "devices",
         "establishment_admins",
         "establishments",
         "point_movements",
+        "local_reward_rules",
         "qr_validation_attempts",
         "recycling_events",
         "redemptions",

@@ -19,6 +19,16 @@
             <strong id="validated-client-name"></strong>
             <p>La estación puede continuar con el análisis del residuo.</p>
         </div>
+        <form id="deposit-form" class="auth-form deposit-form" hidden>
+            <input id="deposit-client-identifier" name="public_identifier" type="hidden">
+            <h2>Registrar botellas</h2>
+            <label for="plastic_bottles">Botellas plásticas</label>
+            <input id="plastic_bottles" name="plastic_bottles" type="number" min="0" max="10000" value="0" required>
+            <label for="glass_bottles">Botellas de vidrio</label>
+            <input id="glass_bottles" name="glass_bottles" type="number" min="0" max="10000" value="0" required>
+            <button class="button form-button" type="submit">Acreditar puntos</button>
+            <p id="deposit-message" class="form-message" role="status" aria-live="polite"></p>
+        </form>
         {% if validated_client %}
         <p class="form-message success">{{ validation_message }}</p>
         <div class="validated-client">
@@ -26,6 +36,7 @@
             <strong>{{ validated_client.full_name }}</strong>
             <p>La estación puede continuar con el análisis del residuo.</p>
         </div>
+        <script>window.validatedClientIdentifier = {{ validated_client.public_identifier|tojson }};</script>
         {% endif %}
     </article>
 </section>

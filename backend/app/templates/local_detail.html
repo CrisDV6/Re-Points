@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}{{ local.name }} | Re-Points{% endblock %}
+{% block content %}
+<section class="dashboard-layout local-detail">
+  <a class="back-link" href="/mi-historial">← Volver a Mis puntos</a>
+  <div class="local-hero">
+    <div><p class="eyebrow">{{ local.code }}</p><h1>{{ local.name }}</h1><p>{{ local.description }}</p><small>{{ local.address }}</small></div>
+    <article class="local-balance"><span>Tu saldo en este local</span><strong>{{ balance }} puntos</strong><small>{{ bottles }} botellas recicladas</small></article>
+  </div>
+  <div class="local-section-grid">
+    <article class="data-card"><h2>Tu actividad</h2>
+      {% if events %}<div class="table-wrap"><table><thead><tr><th>Fecha</th><th>Material</th><th>Botellas</th><th>Puntos</th></tr></thead><tbody>{% for event in events %}<tr><td>{{ event.created_at.strftime('%d/%m/%Y %H:%M') }}</td><td>{{ event.waste_type.value|capitalize }}</td><td>{{ event.bottle_count }}</td><td class="points-positive">+{{ event.points_awarded }}</td></tr>{% endfor %}</tbody></table></div>{% else %}<p class="empty-state">Aún no has reciclado botellas en este local.</p>{% endif %}
+      <a href="/mi-historial?localId={{ local.id }}">Ver historial filtrado</a>
+    </article>
+    <article class="data-card"><h2>Premios disponibles</h2>
+      {% if rewards %}<div class="reward-list">{% for reward in rewards %}<div><strong>{{ reward.name }}</strong><span>{{ reward.points_required }} puntos</span><p>{{ reward.description or '' }}</p></div>{% endfor %}</div>{% else %}<p class="empty-state">Este local todavía no ha publicado premios. Se habilitarán en la siguiente fase.</p>{% endif %}
+    </article>
+  </div>
+</section>
+{% endblock %}
