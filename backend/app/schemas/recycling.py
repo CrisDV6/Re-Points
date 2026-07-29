@@ -12,3 +12,8 @@ class RecyclingEventRequest(BaseModel):
     confidence: float = Field(ge=0, le=1)
     capturedAt: datetime
 
+
+class DeviceUserValidationRequest(BaseModel):
+    deviceId: str = Field(min_length=3, max_length=80)
+    userQrToken: str = Field(min_length=8, max_length=100)
+

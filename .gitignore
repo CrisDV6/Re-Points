@@ -3,5 +3,7 @@ __pycache__/
 *.py[cod]
 .pytest_cache/
 .env
+raspberry/.env
+raspberry/models/*.onnx
 *.db
 

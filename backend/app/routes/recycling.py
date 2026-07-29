@@ -17,7 +17,7 @@ from backend.app.models.entities import (
     UserRole,
     WasteType,
 )
-from backend.app.schemas.recycling import RecyclingEventRequest
+from backend.app.schemas.recycling import DeviceUserValidationRequest, RecyclingEventRequest
 from backend.app.services.security import verify_password
 
 
@@ -37,6 +37,33 @@ def authenticate_device(
     if not device.establishment.is_active:
         raise HTTPException(status_code=403, detail="El local está inactivo")
     return device
+
+
+@router.post("/validate-user")
+def validate_device_user(
+    data: DeviceUserValidationRequest,
+    x_device_api_key: str | None = Header(default=None, alias="X-Device-Api-Key"),
+    database: Session = Depends(get_database_session),
+) -> dict:
+    device = authenticate_device(data.deviceId.strip(), x_device_api_key, database)
+    user = database.scalar(
+        select(User).where(
+            User.public_identifier == data.userQrToken.strip(),
+            User.role == UserRole.CLIENT,
+            User.is_active.is_(True),
+        )
+    )
+    if user is None:
+        raise HTTPException(status_code=404, detail="Usuario QR no encontrado o inactivo")
+    return {
+        "success": True,
+        "user": {"id": user.id, "name": user.full_name},
+        "local": {
+            "id": device.establishment.id,
+            "name": device.establishment.name,
+            "code": device.establishment.code,
+        },
+    }
 
 
 @router.post("", status_code=201)

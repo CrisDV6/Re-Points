@@ -47,6 +47,32 @@ Los dispositivos demo son `RASPI-ECO-001`, `RASPI-GREEN-001` y `RASPI-RECYCLE-00
 
 El backend valida dispositivo, local, QR, confianza, regla de puntos y operación única antes de acreditar el saldo del local dentro de una sola transacción.
 
+## Cliente para Raspberry Pi con dos cámaras
+
+La carpeta `raspberry/` contiene el programa de estación. La cámara configurada como `QR_CAMERA_INDEX` lee el QR del cliente y `BOTTLE_CAMERA_INDEX` observa el depósito. Ambas deben usar índices diferentes.
+
+1. Instala las dependencias:
+
+```bash
+python -m pip install -r requirements-raspberry.txt
+```
+
+2. Copia `raspberry/.env.example` como `raspberry/.env` y configura URL, dispositivo, clave e índices de cámara.
+
+3. Prueba la conexión sin cámaras ni modelo con el token mostrado en el QR:
+
+```bash
+python -m raspberry.simulate --qr-token TOKEN --material plastic
+```
+
+4. Inicia las dos cámaras y el clasificador real:
+
+```bash
+python -m raspberry.main
+```
+
+El modo real requiere un modelo ONNX con dos salidas: `plastic` y `glass`. Los modelos están excluidos de Git. El backend vuelve a validar dispositivo, local, usuario, confianza y operación aunque el cliente Raspberry sea manipulado.
+
 ## Estructura actual
 
 - `backend/app`: aplicación FastAPI.
