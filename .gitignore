@@ -3,5 +3,18 @@ __pycache__/
 *.py[cod]
 .pytest_cache/
 .env
+raspberry/.env
+raspberry/models/*.onnx
+raspberry/ai/models/*.tflite
+raspberry/ai/data/
+dataset/
+datasets/
+test-images/
+test_images/
+*.log
+*.tmp
+*.heic
+*.HEIC
+node_modules/
 *.db
 

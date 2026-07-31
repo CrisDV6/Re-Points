@@ -80,7 +80,14 @@ def test_station_validates_clients_and_audits_attempts(client) -> None:
             )
 
         login(client, admin.email)
-        assert client.get("/estacion").status_code == 200
+        station_page = client.get("/estacion")
+        assert station_page.status_code == 200
+        assert "Esperando código QR" in station_page.text
+        assert "Re-Points" in station_page.text
+        assert "Material detectado" in station_page.text
+        assert "Modo simulación — solo para pruebas" in station_page.text
+        assert "archivo .tflite pendiente" in station_page.text
+        assert "Asignación de puntos bloqueada" in station_page.text
 
         server_rendered = client.get(
             "/estacion",

@@ -34,6 +34,14 @@ def test_raspberry_event_awards_only_the_device_local_and_rejects_duplicates(cli
     app.dependency_overrides[get_database_session] = override_database
     headers = {"X-Device-Api-Key": DEMO_DEVICE_API_KEY}
     try:
+        validation = client.post(
+            "/api/recycling-events/validate-user",
+            json={"deviceId": "RASPI-ECO-001", "userQrToken": payload()["userQrToken"]},
+            headers=headers,
+        )
+        assert validation.status_code == 200
+        assert validation.json()["user"]["name"] == "Usuario Demo"
+        assert validation.json()["local"]["code"] == "LOCAL-ECO-001"
         response = client.post("/api/recycling-events", json=payload(), headers=headers)
         assert response.status_code == 201
         result = response.json()

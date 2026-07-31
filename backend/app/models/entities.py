@@ -157,6 +157,10 @@ class RecyclingEvent(Base):
     status: Mapped[str] = mapped_column(String(30), default="accepted")
     image_path: Mapped[str | None] = mapped_column(String(500), nullable=True)
     captured_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    capture_identifier: Mapped[str | None] = mapped_column(String(100), unique=True, index=True, nullable=True)
+    decision: Mapped[str] = mapped_column(String(30), default="accepted")
+    model_version: Mapped[str | None] = mapped_column(String(50), nullable=True)
+    inference_time_ms: Mapped[Decimal | None] = mapped_column(Numeric(10, 3), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=current_time)
 
     user: Mapped[User] = relationship(back_populates="recycling_events")
