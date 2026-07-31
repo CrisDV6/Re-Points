@@ -1,43 +1,87 @@
 {% extends "base.html" %}
-{% block title %}Estación de reciclaje | Re-Points{% endblock %}
+{% block title %}Estación inteligente | Re-Points{% endblock %}
 {% block content %}
-<section class="station-layout">
-    <div class="station-copy">
-        <p class="eyebrow">ESTACIÓN DE RECICLAJE</p>
-        <h1>Validar código QR</h1>
-        <p>Simula la lectura del escáner introduciendo el identificador obtenido del QR del cliente.</p>
+<main class="smart-station" data-model-available="{{ 'true' if ai_status.model_available else 'false' }}" data-mock-mode="{{ 'true' if ai_status.mock_mode else 'false' }}">
+    <header class="station-hero">
+        <div>
+            <p class="eyebrow">RE-POINTS · ESTACIÓN INTELIGENTE</p>
+            <h1>Recicla, identifica y suma puntos</h1>
+            <p>EcoSort AI funciona como módulo interno de Re-Points para clasificar exclusivamente botellas PET y de vidrio.</p>
+        </div>
+        <div class="station-system-badges" aria-label="Estado técnico">
+            <span class="system-badge {{ 'ready' if ai_status.model_available else 'blocked' }}">
+                Modelo: {{ 'disponible' if ai_status.model_available else 'archivo .tflite pendiente' }}
+            </span>
+            <span class="system-badge {{ 'ready' if ai_status.labels_validated else 'blocked' }}">
+                Etiquetas: {{ 'confirmadas' if ai_status.labels_validated else 'sin confirmar' }}
+            </span>
+            {% if ai_status.mock_mode %}<span class="system-badge mock">MODO MOCK · sin puntos reales</span>{% endif %}
+        </div>
+    </header>
+
+    {% if not ai_status.model_available and not ai_status.mock_mode %}
+    <div class="station-alert warning" role="alert">
+        <strong>EcoSort AI todavía no puede analizar botellas.</strong>
+        Falta <code>raspberry/ai/models/ecosort_mobilenetv2.tflite</code>. La lectura de QR y el simulador siguen disponibles.
     </div>
-    <article class="station-card">
-        <form id="station-form" class="auth-form" action="/estacion" method="get">
-            <label for="public_identifier">Identificador leído</label>
-            <input id="public_identifier" name="public_identifier" type="text" maxlength="100" required autocomplete="off" placeholder="Pega aquí el contenido del QR">
-            <button class="button form-button" type="submit">Validar cliente</button>
-            <p id="station-message" class="form-message" role="status" aria-live="polite"></p>
-        </form>
-        <div id="validated-client" class="validated-client" hidden>
-            <span>CLIENTE AUTORIZADO</span>
-            <strong id="validated-client-name"></strong>
-            <p>La estación puede continuar con el análisis del residuo.</p>
+    {% endif %}
+    {% if not ai_status.labels_validated %}
+    <div class="station-alert danger" role="alert">
+        <strong>Asignación de puntos bloqueada.</strong> El mapeo de <code>labels.json</code> debe confirmarse con el modelo real.
+    </div>
+    {% endif %}
+
+    <section class="station-flow" aria-label="Flujo de reciclaje">
+        <article class="flow-step is-active" id="flow-qr"><span>1</span><div><small>ESTADO</small><strong>Esperando código QR</strong><p>Cámara A lista para identificar al usuario.</p></div></article>
+        <article class="flow-step" id="flow-bottle"><span>2</span><div><small>SIGUIENTE</small><strong>Esperando botella</strong><p>Cámara B capturará una sola botella.</p></div></article>
+        <article class="flow-step" id="flow-analysis"><span>3</span><div><small>ECOSORT AI</small><strong>Analizando imagen</strong><p>MobileNetV2 · 224×224 · TensorFlow Lite.</p></div></article>
+        <article class="flow-step" id="flow-decision"><span>4</span><div><small>SISTEMA EXPERTO</small><strong>Decisión y puntos</strong><p>Solo una clasificación aceptada entrega puntos.</p></div></article>
+    </section>
+
+    <section class="station-dashboard">
+        <article class="station-panel identity-panel">
+            <p class="panel-kicker">SESIÓN ACTUAL</p>
+            <div class="identity-row"><span>Usuario identificado</span><strong id="station-user">Aún no identificado</strong></div>
+            <div class="identity-row"><span>Local actual</span><strong id="station-local">{{ establishment.name if establishment else 'Sin local asignado' }}</strong></div>
+            <div class="identity-row"><span>Estado</span><strong id="station-current-state">Esperando código QR</strong></div>
+            <p id="station-live-message" class="station-live-message" role="status" aria-live="polite">Muestra el QR personal frente a la cámara A.</p>
+        </article>
+
+        <article class="station-panel result-panel">
+            <p class="panel-kicker">RESULTADO REAL MÁS RECIENTE</p>
+            <div class="result-grid">
+                <div><span>Material detectado</span><strong id="ai-material">—</strong></div>
+                <div><span>Confianza</span><strong id="ai-confidence">—</strong></div>
+                <div><span>Decisión experta</span><strong id="ai-decision" class="decision-badge neutral">Sin resultado</strong></div>
+                <div><span>Inferencia</span><strong id="ai-inference">—</strong></div>
+                <div><span>Puntos obtenidos</span><strong id="ai-points">—</strong></div>
+                <div><span>Saldo en este local</span><strong id="ai-balance">—</strong></div>
+            </div>
+            <p class="result-note">Los campos permanecen vacíos hasta recibir un evento real del dispositivo. No se muestran predicciones inventadas.</p>
+        </article>
+    </section>
+
+    <details class="simulation-zone" id="simulation-zone">
+        <summary><span>Modo simulación — solo para pruebas</span><small>Abrir herramientas manuales de desarrollo</small></summary>
+        <div class="simulation-content">
+            <div class="station-alert info"><strong>Importante:</strong> estas herramientas sustituyen temporalmente las cámaras. El registro manual de botellas crea datos de prueba y no representa una inferencia de EcoSort AI.</div>
+            <form id="station-form" class="auth-form" action="/estacion" method="get">
+                <label for="public_identifier">Contenido del QR de prueba</label>
+                <input id="public_identifier" name="public_identifier" type="text" maxlength="100" required autocomplete="off" placeholder="Pega el identificador público del usuario">
+                <button class="button form-button" type="submit">Simular lectura del QR</button>
+                <p id="station-message" class="form-message" role="status" aria-live="polite"></p>
+            </form>
+            <div id="validated-client" class="validated-client" {% if not validated_client %}hidden{% endif %}><span>CLIENTE AUTORIZADO · SIMULACIÓN</span><strong id="validated-client-name">{{ validated_client.full_name if validated_client else '' }}</strong><p>La pantalla queda esperando una botella.</p></div>
+            <form id="deposit-form" class="auth-form deposit-form" hidden>
+                <input id="deposit-client-identifier" name="public_identifier" type="hidden">
+                <h2>Registro manual de prueba</h2>
+                <label for="plastic_bottles">Botellas PET</label><input id="plastic_bottles" name="plastic_bottles" type="number" min="0" max="10000" value="0" required>
+                <label for="glass_bottles">Botellas de vidrio</label><input id="glass_bottles" name="glass_bottles" type="number" min="0" max="10000" value="0" required>
+                <button class="button form-button" type="submit">Registrar datos de simulación</button>
+                <p id="deposit-message" class="form-message" role="status" aria-live="polite"></p>
+            </form>
+            {% if validated_client %}<script>window.validatedClientIdentifier = {{ validated_client.public_identifier|tojson }}; window.validatedClientName = {{ validated_client.full_name|tojson }};</script>{% endif %}
         </div>
-        <form id="deposit-form" class="auth-form deposit-form" hidden>
-            <input id="deposit-client-identifier" name="public_identifier" type="hidden">
-            <h2>Registrar botellas</h2>
-            <label for="plastic_bottles">Botellas plásticas</label>
-            <input id="plastic_bottles" name="plastic_bottles" type="number" min="0" max="10000" value="0" required>
-            <label for="glass_bottles">Botellas de vidrio</label>
-            <input id="glass_bottles" name="glass_bottles" type="number" min="0" max="10000" value="0" required>
-            <button class="button form-button" type="submit">Acreditar puntos</button>
-            <p id="deposit-message" class="form-message" role="status" aria-live="polite"></p>
-        </form>
-        {% if validated_client %}
-        <p class="form-message success">{{ validation_message }}</p>
-        <div class="validated-client">
-            <span>CLIENTE AUTORIZADO</span>
-            <strong>{{ validated_client.full_name }}</strong>
-            <p>La estación puede continuar con el análisis del residuo.</p>
-        </div>
-        <script>window.validatedClientIdentifier = {{ validated_client.public_identifier|tojson }};</script>
-        {% endif %}
-    </article>
-</section>
+    </details>
+</main>
 {% endblock %}

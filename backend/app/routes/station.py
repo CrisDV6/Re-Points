@@ -209,6 +209,19 @@ def owner_dashboard(
                 "bottle_count": event.bottle_count,
                 "points": event.points_awarded,
                 "created_at": event.created_at.isoformat(),
+                "confidence": float(event.confidence),
+                "decision": event.decision,
+                "model_version": event.model_version,
+                "inference_time_ms": float(event.inference_time_ms or 0),
+                "local_balance": (
+                    database.scalar(
+                        select(CustomerBalance.points).where(
+                            CustomerBalance.user_id == event.user_id,
+                            CustomerBalance.establishment_id == establishment.id,
+                        )
+                    )
+                    or 0
+                ),
             }
             for event in recent
         ],

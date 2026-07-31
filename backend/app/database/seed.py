@@ -1,3 +1,5 @@
+import os
+
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -16,7 +18,9 @@ DEMO_DEVICES = (
     ("RASPI-GREEN-001", "LOCAL-GREEN-002", "Raspberry Green Store"),
     ("RASPI-RECYCLE-001", "LOCAL-RECYCLE-003", "Raspberry Recycle Shop"),
 )
-DEMO_DEVICE_API_KEY = "RaspiDemo2026*"
+DEMO_DEVICE_API_KEY = os.getenv("DEMO_DEVICE_API_KEY", "change-this-demo-device-key")
+DEMO_CLIENT_PASSWORD = os.getenv("DEMO_CLIENT_PASSWORD", "change-this-demo-client-password")
+DEMO_ADMIN_PASSWORD = os.getenv("DEMO_ADMIN_PASSWORD", "change-this-demo-admin-password")
 
 
 def _user(database: Session, email: str, name: str, role: UserRole, password: str, reset_password: bool = False) -> User:
@@ -45,14 +49,14 @@ def seed_phase_one(database: Session) -> None:
         database.flush()
         locals_by_code[code] = local
 
-    demo = _user(database, "usuario@repoints.com", "Usuario Demo", UserRole.CLIENT, "Demo123*", reset_demo_passwords)
-    _user(database, "admin@repoints.com", "Administrador General", UserRole.SUPERADMIN, "Admin123*", reset_demo_passwords).role = UserRole.SUPERADMIN
+    demo = _user(database, "usuario@repoints.com", "Usuario Demo", UserRole.CLIENT, DEMO_CLIENT_PASSWORD, reset_demo_passwords)
+    _user(database, "admin@repoints.com", "Administrador General", UserRole.SUPERADMIN, DEMO_ADMIN_PASSWORD, reset_demo_passwords).role = UserRole.SUPERADMIN
     for email, code in (
         ("admin.eco@repoints.com", "LOCAL-ECO-001"),
         ("admin.green@repoints.com", "LOCAL-GREEN-002"),
         ("admin.recycle@repoints.com", "LOCAL-RECYCLE-003"),
     ):
-        admin = _user(database, email, f"Administrador {locals_by_code[code].name}", UserRole.ESTABLISHMENT_ADMIN, "Admin123*", reset_demo_passwords)
+        admin = _user(database, email, f"Administrador {locals_by_code[code].name}", UserRole.ESTABLISHMENT_ADMIN, DEMO_ADMIN_PASSWORD, reset_demo_passwords)
         assignment = database.scalar(select(EstablishmentAdmin).where(EstablishmentAdmin.user_id == admin.id, EstablishmentAdmin.establishment_id == locals_by_code[code].id))
         if assignment is None:
             database.add(EstablishmentAdmin(user_id=admin.id, establishment_id=locals_by_code[code].id))

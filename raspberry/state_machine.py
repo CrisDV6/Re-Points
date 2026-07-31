@@ -2,6 +2,9 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from enum import Enum
 from uuid import uuid4
+from inspect import signature
+
+from raspberry.ai.expert_system import ExpertRules
 
 
 class StationState(str, Enum):
@@ -21,11 +24,11 @@ class StationSnapshot:
 
 
 class RecyclingStation:
-    def __init__(self, qr_reader, bottle_classifier, api_client, minimum_confidence: float = 0.80):
+    def __init__(self, qr_reader, bottle_classifier, api_client, minimum_confidence: float = 0.85, recapture_confidence: float = 0.60):
         self.qr_reader = qr_reader
         self.bottle_classifier = bottle_classifier
         self.api_client = api_client
-        self.minimum_confidence = minimum_confidence
+        self.rules = ExpertRules(minimum_confidence, recapture_confidence)
         self.snapshot = StationSnapshot()
 
     def process_qr_frame(self, frame) -> StationSnapshot:
@@ -49,18 +52,37 @@ class RecyclingStation:
         if self.snapshot.state != StationState.WAITING_BOTTLE:
             return self.snapshot
         classification = self.bottle_classifier.classify(frame)
-        if classification.confidence < self.minimum_confidence:
-            self.snapshot.message = "Botella no reconocida con suficiente confianza"
+        decision = getattr(classification, "decision", None) or self.rules.decide(classification.confidence).value
+        if not getattr(classification, "labels_validated", True):
+            self.snapshot.state = StationState.ERROR
+            self.snapshot.message = "Etiquetas del modelo sin confirmar; no se asignaron puntos"
+            return self.snapshot
+        if decision == "recapture":
+            self.snapshot.message = "Confianza intermedia; vuelve a colocar la botella para recapturar"
+            return self.snapshot
+        if decision == "unknown":
+            self.snapshot.message = "Material desconocido o sin suficiente confianza; no se asignaron puntos"
             return self.snapshot
         self.snapshot.state = StationState.SUBMITTING
         try:
-            result = self.api_client.register_bottle(
-                operation_id=str(uuid4()),
-                user_qr_token=self.snapshot.user_qr_token,
-                material=classification.material,
-                confidence=classification.confidence,
-                captured_at=datetime.now(timezone.utc),
-            )
+            event_id = str(uuid4())
+            arguments = {
+                "operation_id": event_id,
+                "user_qr_token": self.snapshot.user_qr_token,
+                "material": classification.material,
+                "confidence": classification.confidence,
+                "captured_at": datetime.now(timezone.utc),
+            }
+            supported = signature(self.api_client.register_bottle).parameters
+            extended = {
+                "decision": decision,
+                "model_version": getattr(classification, "model_version", "legacy"),
+                "inference_time_ms": getattr(classification, "inference_time_ms", 0),
+                "capture_id": event_id,
+                "labels_validated": getattr(classification, "labels_validated", True),
+            }
+            arguments.update({key: value for key, value in extended.items() if key in supported})
+            result = self.api_client.register_bottle(**arguments)
         except Exception as exc:
             self.snapshot.state = StationState.ERROR
             self.snapshot.message = str(exc)

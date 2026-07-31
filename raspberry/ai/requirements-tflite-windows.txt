@@ -1,0 +1,3 @@
+# Opcional para probar un .tflite real en Windows con Python 3.13.
+# No es necesario para ejecutar el backend ni el frontend.
+tensorflow==2.21.0; platform_system == "Windows" and python_version >= "3.13"

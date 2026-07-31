@@ -1,6 +1,8 @@
+import json
+import os
 from pathlib import Path
 
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy import func, select
@@ -68,6 +70,18 @@ def station_page(
 ) -> HTMLResponse:
     validated_client = None
     validation_message = None
+    try:
+        establishment = get_operator_establishment(operator, database)
+    except HTTPException:
+        establishment = None
+    model_path = Path(os.getenv("AI_MODEL_PATH", "raspberry/ai/models/ecosort_mobilenetv2.tflite"))
+    labels_path = Path(os.getenv("AI_LABELS_PATH", "raspberry/ai/models/labels.json"))
+    labels_validated = False
+    try:
+        labels_validated = json.loads(labels_path.read_text(encoding="utf-8")).get("validated") is True
+    except (OSError, ValueError):
+        pass
+    mock_mode = os.getenv("AI_MOCK_MODE", "false").lower() in {"1", "true", "yes"}
     if public_identifier:
         result = validate_qr(
             QrValidationRequest(public_identifier=public_identifier),
@@ -84,6 +98,12 @@ def station_page(
             "operator": operator,
             "validated_client": validated_client,
             "validation_message": validation_message,
+            "establishment": establishment,
+            "ai_status": {
+                "model_available": model_path.is_file(),
+                "labels_validated": labels_validated,
+                "mock_mode": mock_mode,
+            },
         },
     )
 

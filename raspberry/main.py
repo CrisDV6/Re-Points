@@ -1,7 +1,9 @@
 import time
 
 from raspberry.api_client import RePointsApiClient
-from raspberry.bottle_classifier import OnnxBottleClassifier
+from raspberry.ai.expert_system import ExpertRules
+from raspberry.ai.inference import MockBottleClassifier, TFLiteBottleClassifier
+from raspberry.ai.pending_queue import PendingEventQueue
 from raspberry.camera_manager import DualCameraManager
 from raspberry.config import RaspberryConfig
 from raspberry.qr_reader import QrReader
@@ -10,22 +12,27 @@ from raspberry.state_machine import RecyclingStation, StationState
 
 def run() -> None:
     config = RaspberryConfig.from_environment()
-    if not config.classifier_model_path:
-        raise SystemExit(
-            "Configura CLASSIFIER_MODEL_PATH con un modelo ONNX. "
-            "Para probar sin modelo usa: python -m raspberry.simulate --qr-token TOKEN"
-        )
+    rules = ExpertRules(config.ai_accept_threshold, config.ai_recapture_threshold)
+    classifier = (
+        MockBottleClassifier("plastic", 0.95, config.ai_model_version, rules, config.ai_mock_mode)
+        if config.ai_mock_mode
+        else TFLiteBottleClassifier(config.ai_model_path, config.ai_labels_path, config.ai_model_version, rules)
+    )
     client = RePointsApiClient(
         config.api_base_url,
         config.device_code,
         config.device_api_key,
         config.request_timeout_seconds,
+        config.request_max_retries,
+        PendingEventQueue(config.pending_events_path),
     )
+    client.flush_pending()
     station = RecyclingStation(
         QrReader(),
-        OnnxBottleClassifier(config.classifier_model_path),
+        classifier,
         client,
-        config.minimum_detection_confidence,
+        config.ai_accept_threshold,
+        config.ai_recapture_threshold,
     )
     try:
         import cv2

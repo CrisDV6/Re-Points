@@ -7,6 +7,10 @@ from pathlib import Path
 class BottleClassification:
     material: str
     confidence: float
+    decision: str | None = None
+    model_version: str = "legacy-simulator"
+    inference_time_ms: float = 0.0
+    labels_validated: bool = True
 
 
 class OnnxBottleClassifier:

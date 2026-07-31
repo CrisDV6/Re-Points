@@ -3,7 +3,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 
 from backend.app.database.base import Base
-from backend.app.database.seed import DEMO_LOCALS, seed_phase_one
+from backend.app.database.seed import DEMO_CLIENT_PASSWORD, DEMO_LOCALS, seed_phase_one
 from backend.app.database.session import get_database_session
 from backend.app.main import app
 from backend.app.models.entities import CustomerBalance, Establishment, User
@@ -30,7 +30,7 @@ def test_phase_one_seed_and_points_by_local_api(client):
 
     app.dependency_overrides[get_database_session] = override_database
     try:
-        login = client.post("/auth/login", json={"email": "usuario@repoints.com", "password": "Demo123*"})
+        login = client.post("/auth/login", json={"email": "usuario@repoints.com", "password": DEMO_CLIENT_PASSWORD})
         assert login.status_code == 200
         logged_home = client.get("/")
         assert "RESUMEN DE TU CUENTA" in logged_home.text
@@ -73,7 +73,7 @@ def test_phase_two_local_detail_public_api_and_history_filter(client):
 
         assert client.get(f"/locales/{local_id}").status_code == 401
         assert client.get("/api/users/me/recycling-history").status_code == 401
-        assert client.post("/auth/login", json={"email": "usuario@repoints.com", "password": "Demo123*"}).status_code == 200
+        assert client.post("/auth/login", json={"email": "usuario@repoints.com", "password": DEMO_CLIENT_PASSWORD}).status_code == 200
 
         detail = client.get(f"/locales/{local_id}")
         assert detail.status_code == 200

@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "validated": false,
+  "classes": {
+    "0": "plastic",
+    "1": "glass"
+  },
+  "model_output": {
+    "type": "binary_sigmoid",
+    "positive_class_index": 1
+  },
+  "evidence": "NO CONFIRMADO: el informe de diseño indica plástico=1/vidrio=0, mientras el informe de implementación dice que la salida es probabilidad de vidrio. Falta notebook/class_indices/modelo para resolverlo."
+}
