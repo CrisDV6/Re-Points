@@ -7,7 +7,7 @@ from raspberry.ai.preprocessing import validate_image_file
 
 
 def run() -> None:
-    parser = argparse.ArgumentParser(description="Verifica manualmente el mapeo 0/1 del modelo EcoSort AI")
+    parser = argparse.ArgumentParser(description="Verifica manualmente el mapeo 0/1 del modelo de Re-Points")
     parser.add_argument("--model", required=True)
     parser.add_argument("--labels", default="raspberry/ai/models/labels.json")
     parser.add_argument("images", nargs="+", help="Imágenes conocidas JPG/PNG de PET y vidrio")

@@ -75,9 +75,9 @@ python -m raspberry.main
 
 El modo real requiere el MobileNetV2 exportado a TensorFlow Lite. Los modelos están excluidos de Git hasta que se entregue y confirme el artefacto documentado. El backend vuelve a validar dispositivo, local, usuario, decisión, confianza y operación aunque el cliente Raspberry sea manipulado.
 
-## EcoSort AI
+## Inteligencia artificial de Re-Points
 
-EcoSort AI es el módulo interno de inteligencia artificial de Re-Points. Su alcance se limita a **botellas de plástico PET** y **botellas de vidrio**; no clasifica todos los residuos ni todos los tipos de plástico.
+La inteligencia artificial de Re-Points se limita a **botellas de plástico PET** y **botellas de vidrio**; no clasifica todos los residuos ni todos los tipos de plástico.
 
 La cámara A lee el QR público del cliente. El backend comprueba usuario, dispositivo y local. La cámara B captura la botella, que se redimensiona a 224x224 y recibe exactamente el preprocesamiento MobileNetV2 (`x / 127.5 - 1`). TensorFlow Lite devuelve la predicción, confianza y tiempo de inferencia. El sistema experto aplica:
 
@@ -111,7 +111,7 @@ DEVICE_CODE=RASPI-ECO-001
 DEVICE_API_KEY=change-this-device-key
 QR_CAMERA_INDEX=0
 BOTTLE_CAMERA_INDEX=1
-AI_MODEL_PATH=raspberry/ai/models/ecosort_mobilenetv2.tflite
+AI_MODEL_PATH=raspberry/ai/models/re_points_mobilenetv2.tflite
 AI_LABELS_PATH=raspberry/ai/models/labels.json
 AI_ACCEPT_THRESHOLD=0.85
 AI_RECAPTURE_THRESHOLD=0.60
@@ -129,7 +129,7 @@ No se entregó el `.tflite`, por lo que no se incluye ni se inventa un modelo. C
 Cuando se entregue el modelo, valida el mapeo con imágenes conocidas:
 
 ```bash
-python -m raspberry.ai.verify_labels --model raspberry/ai/models/ecosort_mobilenetv2.tflite pet_1.jpg vidrio_1.jpg
+python -m raspberry.ai.verify_labels --model raspberry/ai/models/re_points_mobilenetv2.tflite pet_1.jpg vidrio_1.jpg
 ```
 
 Solo tras comprobar varios ejemplos de ambas clases debe cambiarse `validated` a `true`.
@@ -138,7 +138,7 @@ Solo tras comprobar varios ejemplos de ambas clases debe cambiarse `validated` a
 
 `AI_MOCK_MODE=true` activa un clasificador marcado como `mock-*`. Permite comprobar cámaras, flujo y reglas, pero conserva las etiquetas como no validadas y por eso no acredita puntos. Nunca se activa de manera implícita.
 
-### Endpoint EcoSort AI
+### Endpoint de inteligencia artificial de Re-Points
 
 `POST /api/recycling-events` usa la cabecera `X-Device-Api-Key`. También se mantienen los nombres anteriores (`operationId`, `userQrToken`, `capturedAt`) por compatibilidad.
 
@@ -192,7 +192,7 @@ El cliente usa timeout, reintentos exponenciales y una cola JSONL para eventos s
 
 En Windows con Python 3.13, `requirements.txt` contiene únicamente backend, frontend y pruebas. No instala dependencias de cámaras. La prueba opcional de un modelo real usa `raspberry/ai/requirements-tflite-windows.txt`; TensorFlow no se instala como requisito general. En Raspberry Pi se recomienda Python 3.11 porque el paquete liviano `tflite-runtime 2.14.0` no declara soporte para Python 3.12/3.13.
 
-La guía consolidada se encuentra en `docs/INTEGRACION_ECOSORT_AI.md` y los tres informes fuente están versionados en `docs/ia/`.
+La guía consolidada se encuentra en `docs/INTEGRACION_IA_RE_POINTS.md` y los tres informes fuente están versionados en `docs/ia/`.
 
 ### Limitaciones actuales
 

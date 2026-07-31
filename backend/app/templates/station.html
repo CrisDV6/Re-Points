@@ -6,7 +6,7 @@
         <div>
             <p class="eyebrow">RE-POINTS · ESTACIÓN INTELIGENTE</p>
             <h1>Recicla, identifica y suma puntos</h1>
-            <p>EcoSort AI funciona como módulo interno de Re-Points para clasificar exclusivamente botellas PET y de vidrio.</p>
+            <p>La inteligencia artificial de Re-Points clasifica exclusivamente botellas PET y de vidrio.</p>
         </div>
         <div class="station-system-badges" aria-label="Estado técnico">
             <span class="system-badge {{ 'ready' if ai_status.model_available else 'blocked' }}">
@@ -21,8 +21,8 @@
 
     {% if not ai_status.model_available and not ai_status.mock_mode %}
     <div class="station-alert warning" role="alert">
-        <strong>EcoSort AI todavía no puede analizar botellas.</strong>
-        Falta <code>raspberry/ai/models/ecosort_mobilenetv2.tflite</code>. La lectura de QR y el simulador siguen disponibles.
+        <strong>Re-Points todavía no puede analizar botellas.</strong>
+        Falta <code>raspberry/ai/models/re_points_mobilenetv2.tflite</code>. La lectura de QR y el simulador siguen disponibles.
     </div>
     {% endif %}
     {% if not ai_status.labels_validated %}
@@ -34,7 +34,7 @@
     <section class="station-flow" aria-label="Flujo de reciclaje">
         <article class="flow-step is-active" id="flow-qr"><span>1</span><div><small>ESTADO</small><strong>Esperando código QR</strong><p>Cámara A lista para identificar al usuario.</p></div></article>
         <article class="flow-step" id="flow-bottle"><span>2</span><div><small>SIGUIENTE</small><strong>Esperando botella</strong><p>Cámara B capturará una sola botella.</p></div></article>
-        <article class="flow-step" id="flow-analysis"><span>3</span><div><small>ECOSORT AI</small><strong>Analizando imagen</strong><p>MobileNetV2 · 224×224 · TensorFlow Lite.</p></div></article>
+        <article class="flow-step" id="flow-analysis"><span>3</span><div><small>RE-POINTS IA</small><strong>Analizando imagen</strong><p>MobileNetV2 · 224×224 · TensorFlow Lite.</p></div></article>
         <article class="flow-step" id="flow-decision"><span>4</span><div><small>SISTEMA EXPERTO</small><strong>Decisión y puntos</strong><p>Solo una clasificación aceptada entrega puntos.</p></div></article>
     </section>
 
@@ -64,7 +64,7 @@
     <details class="simulation-zone" id="simulation-zone">
         <summary><span>Modo simulación — solo para pruebas</span><small>Abrir herramientas manuales de desarrollo</small></summary>
         <div class="simulation-content">
-            <div class="station-alert info"><strong>Importante:</strong> estas herramientas sustituyen temporalmente las cámaras. El registro manual de botellas crea datos de prueba y no representa una inferencia de EcoSort AI.</div>
+            <div class="station-alert info"><strong>Importante:</strong> estas herramientas sustituyen temporalmente las cámaras. El registro manual de botellas crea datos de prueba y no representa una inferencia de la inteligencia artificial de Re-Points.</div>
             <form id="station-form" class="auth-form" action="/estacion" method="get">
                 <label for="public_identifier">Contenido del QR de prueba</label>
                 <input id="public_identifier" name="public_identifier" type="text" maxlength="100" required autocomplete="off" placeholder="Pega el identificador público del usuario">

@@ -74,7 +74,7 @@ def station_page(
         establishment = get_operator_establishment(operator, database)
     except HTTPException:
         establishment = None
-    model_path = Path(os.getenv("AI_MODEL_PATH", "raspberry/ai/models/ecosort_mobilenetv2.tflite"))
+    model_path = Path(os.getenv("AI_MODEL_PATH", "raspberry/ai/models/re_points_mobilenetv2.tflite"))
     labels_path = Path(os.getenv("AI_LABELS_PATH", "raspberry/ai/models/labels.json"))
     labels_validated = False
     try:

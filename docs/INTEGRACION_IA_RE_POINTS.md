@@ -1,10 +1,10 @@
-# Integración de EcoSort AI en Re-Points
+# Integración de inteligencia artificial en Re-Points
 
 ## Qué es cada parte
 
 **Re-Points es el sistema completo.** Administra usuarios, códigos QR, locales, dispositivos, reglas de recompensa, puntos separados por establecimiento, historial y la interfaz web.
 
-**EcoSort AI es un módulo interno de Re-Points.** Está dentro de `raspberry/ai` y se ocupa únicamente de clasificar botellas de plástico PET y botellas de vidrio. No es un proyecto separado ni pretende reconocer todos los residuos.
+**La inteligencia artificial forma parte de Re-Points.** Está dentro de `raspberry/ai` y se ocupa únicamente de clasificar botellas de plástico PET y botellas de vidrio. No es un proyecto separado ni pretende reconocer todos los residuos.
 
 ## Estado actual
 
@@ -19,7 +19,7 @@ Terminado:
 - idempotencia mediante `eventId` y `captureId`;
 - reintentos, timeout y cola local de eventos pendientes;
 - interfaz visual de la estación y simulador manual separado;
-- pruebas automatizadas del backend y del módulo EcoSort AI.
+- pruebas automatizadas del backend y del módulo de inteligencia artificial de Re-Points.
 
 Disponible solo para pruebas:
 
@@ -31,7 +31,7 @@ Disponible solo para pruebas:
 
 El compañero encargado de IA debe entregar:
 
-1. `ecosort_mobilenetv2.tflite`, exportado desde el entrenamiento documentado;
+1. `re_points_mobilenetv2.tflite`, exportado desde el entrenamiento documentado;
 2. el notebook ejecutado o `class_indices` que demuestre el orden real de las clases;
 3. varias imágenes conocidas de PET y vidrio para validar el mapeo;
 4. idealmente el hash y versión del modelo entregado.
@@ -43,13 +43,13 @@ No se incluye un modelo inventado. Mientras falte, la interfaz muestra un aviso 
 Coloca el archivo en:
 
 ```text
-raspberry/ai/models/ecosort_mobilenetv2.tflite
+raspberry/ai/models/re_points_mobilenetv2.tflite
 ```
 
 Configura `raspberry/.env`:
 
 ```dotenv
-AI_MODEL_PATH=raspberry/ai/models/ecosort_mobilenetv2.tflite
+AI_MODEL_PATH=raspberry/ai/models/re_points_mobilenetv2.tflite
 AI_MODEL_VERSION=1.0.0
 AI_MOCK_MODE=false
 ```
@@ -64,7 +64,7 @@ Con el modelo real y varias imágenes conocidas:
 
 ```bash
 python -m raspberry.ai.verify_labels \
-  --model raspberry/ai/models/ecosort_mobilenetv2.tflite \
+  --model raspberry/ai/models/re_points_mobilenetv2.tflite \
   pet_conocida_1.jpg vidrio_conocido_1.jpg
 ```
 

@@ -22,7 +22,7 @@ class RaspberryConfig:
     device_api_key: str
     qr_camera_index: int = 0
     bottle_camera_index: int = 1
-    ai_model_path: str = "raspberry/ai/models/ecosort_mobilenetv2.tflite"
+    ai_model_path: str = "raspberry/ai/models/re_points_mobilenetv2.tflite"
     ai_labels_path: str = "raspberry/ai/models/labels.json"
     ai_accept_threshold: float = 0.85
     ai_recapture_threshold: float = 0.60
@@ -46,7 +46,7 @@ class RaspberryConfig:
             device_api_key=os.environ["DEVICE_API_KEY"],
             qr_camera_index=int(os.getenv("QR_CAMERA_INDEX", "0")),
             bottle_camera_index=int(os.getenv("BOTTLE_CAMERA_INDEX", "1")),
-            ai_model_path=os.getenv("AI_MODEL_PATH", "raspberry/ai/models/ecosort_mobilenetv2.tflite"),
+            ai_model_path=os.getenv("AI_MODEL_PATH", "raspberry/ai/models/re_points_mobilenetv2.tflite"),
             ai_labels_path=os.getenv("AI_LABELS_PATH", "raspberry/ai/models/labels.json"),
             ai_accept_threshold=float(os.getenv("AI_ACCEPT_THRESHOLD", "0.85")),
             ai_recapture_threshold=float(os.getenv("AI_RECAPTURE_THRESHOLD", "0.60")),

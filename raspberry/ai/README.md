@@ -1,6 +1,6 @@
-# EcoSort AI en Raspberry Pi
+# Inteligencia artificial de Re-Points en Raspberry Pi
 
-EcoSort AI es el módulo interno de Re-Points que clasifica exclusivamente botellas PET y botellas de vidrio. No clasifica todos los residuos ni todos los plásticos.
+El módulo de inteligencia artificial de Re-Points clasifica exclusivamente botellas PET y botellas de vidrio. No clasifica todos los residuos ni todos los plásticos.
 
 ## Flujo seguro
 
@@ -17,7 +17,7 @@ python -m pip install -r raspberry/ai/requirements-tflite.txt
 cp raspberry/.env.example raspberry/.env
 ```
 
-Coloca el modelo entregado y verificado en `raspberry/ai/models/ecosort_mobilenetv2.tflite`. Si `AI_MOCK_MODE=false` y el archivo falta, el inicio termina con un error claro; nunca se inventa un modelo.
+Coloca el modelo entregado y verificado en `raspberry/ai/models/re_points_mobilenetv2.tflite`. Si `AI_MOCK_MODE=false` y el archivo falta, el inicio termina con un error claro; nunca se inventa un modelo.
 
 Para backend y frontend en Windows 3.13 instala únicamente el `requirements.txt` de la raíz. Las dependencias de cámara están separadas en `requirements-raspberry.txt`. En Raspberry Pi 5 se recomienda Python 3.11 para poder usar `tflite-runtime 2.14.0`. La prueba opcional de TFLite en Windows 3.13 usa `requirements-tflite-windows.txt` y no es necesaria para la aplicación web.
 
@@ -26,7 +26,7 @@ Para backend y frontend en Windows 3.13 instala únicamente el `requirements.txt
 Los informes se contradicen sobre el índice positivo y no se entregaron notebook, `class_indices` ni modelo. Por ello `labels.json` tiene `validated: false` y el modo real no inicia. Cuando estén disponibles el modelo y fotos conocidas de ambos materiales:
 
 ```bash
-python -m raspberry.ai.verify_labels --model raspberry/ai/models/ecosort_mobilenetv2.tflite foto_pet.jpg foto_vidrio.jpg
+python -m raspberry.ai.verify_labels --model raspberry/ai/models/re_points_mobilenetv2.tflite foto_pet.jpg foto_vidrio.jpg
 ```
 
 Repite con varias imágenes. Solo tras comprobar ambas clases cambia `validated` a `true`. El script nunca hace ese cambio automáticamente.

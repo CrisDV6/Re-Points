@@ -12,7 +12,7 @@
     --shadow: 0 22px 60px rgba(11, 47, 37, 0.13);
 }
 
-/* Estación visual Re-Points + EcoSort AI */
+/* Estación visual Re-Points */
 .smart-station { min-height: calc(100vh - 76px); padding: 54px 6vw 80px; background: linear-gradient(180deg, #eef5ec 0, #fff 42%); }
 .station-hero { display: flex; align-items: flex-end; justify-content: space-between; gap: 40px; max-width: 1280px; margin: 0 auto 28px; }
 .station-hero h1 { max-width: 780px; margin: 4px 0 12px; color: var(--green-900); font-size: clamp(2.3rem, 5vw, 4.7rem); line-height: .98; letter-spacing: -.045em; }
